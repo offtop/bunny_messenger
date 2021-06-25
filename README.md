@@ -1,0 +1,1 @@
+gem for structuring RabbitMQ in pure ruby
