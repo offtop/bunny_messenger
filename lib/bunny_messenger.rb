@@ -18,7 +18,7 @@ require 'json'
 # - logger - logger instance
 # - logger_level - level of logger
 class BunnyMessenger
-  VERSION = '0.1.2'
+  VERSION = '0.1.5'
   class << self
     attr_accessor :web_host,
                   :auth_params,
@@ -38,4 +38,3 @@ require 'bunny_messenger/migration'
 require 'bunny_messenger/exchange_by_name'
 require 'bunny_messenger/queue_by_name'
 require 'bunny_messenger/consumer'
-

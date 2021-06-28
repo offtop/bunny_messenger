@@ -50,16 +50,19 @@ class BunnyMessenger
 
       def load_config
         return if @config
-        @config = YAML.load_file('config/bunny.yml')[environment]
-        @config.each do |k,v|
-          if v.is_a?(Hash)
-            BunnyMessenger.send(k.to_s+'=', v.transform_keys(&:to_sym))
-          else
-            BunnyMessenger.send(k.to_s+'=', v)
+
+        begin
+          @config = YAML.load_file('config/bunny.yml')[environment]
+          @config.each do |k, v|
+            if v.is_a?(Hash)
+              BunnyMessenger.send(k.to_s + '=', v.transform_keys(&:to_sym))
+            else
+              BunnyMessenger.send(k.to_s + '=', v)
+            end
           end
+        rescue Errno::ENOENT
+          @config = {}
         end
-      rescue Errno::ENOENT
-        @config = {}
       end
 
       def default_logger_level

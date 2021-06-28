@@ -14,7 +14,7 @@ class BunnyMessenger
         migrations = ObjectSpace
                      .each_object(Class)
                      .select { |klass| klass < BunnyMessenger::Migration }
-        migrations = migrations.map(&:new).sort_by(&:version).map(&:call)
+        migrations.map(&:new).sort_by(&:version).map(&:call)
       end
 
       def save

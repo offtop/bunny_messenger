@@ -28,11 +28,11 @@ class BunnyMessenger
     end
 
     def delete_exchange(name)
-      BunnyMessenger::ExchangeByName.(name).delete
+      BunnyMessenger::ExchangeByName.call(name).delete
     end
 
     def delete_queue(name)
-      BunnyMessenger::QueueByName.(name).delete
+      BunnyMessenger::QueueByName.call(name).delete
     end
 
     def create_queue(name, opts = {})

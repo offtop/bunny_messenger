@@ -19,7 +19,8 @@ class BunnyMessenger
 
     def call
       return if called?
-      trace_time "Message #{message_id} sent in" do 
+
+      trace_time "Message #{message_id} sent in" do
         exchange.publish(payload, opts)
       end
     end
@@ -38,7 +39,7 @@ class BunnyMessenger
 
     def called?
       return @called if @called
-      
+
       @called = true
       false
     end
@@ -49,10 +50,8 @@ class BunnyMessenger
 
     def exchange
       raise NotImplementedError
-      # Ensure Exchange is defined correctly here
-      @exchange ||= BunnyMessenger::ExchangeByName.('exchange_name')
-
-      @exchange
+      # Example
+      # @exchange ||= BunnyMessenger::ExchangeByName.call('exchange_name')
     end
 
     def payload=(payload)
@@ -69,7 +68,7 @@ class BunnyMessenger
     end
 
     def opts
-      default_opts.merge.merge(class_opts).merge(@opts)
+      default_opts.merge(class_opts).merge(@opts)
     end
   end
 end
