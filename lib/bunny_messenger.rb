@@ -7,6 +7,7 @@ require 'yaml'
 require 'httparty'
 require 'fileutils'
 require 'singleton'
+require 'json'
 
 # Basis class for work with RabbitMQ
 # - web_host -  http://localhost:15672/ - url for web admin
@@ -17,7 +18,7 @@ require 'singleton'
 # - logger - logger instance
 # - logger_level - level of logger
 class BunnyMessenger
-  VERSION = "0.0.5"
+  VERSION = '0.1.0'
   class << self
     attr_accessor :web_host,
                   :auth_params,
@@ -31,5 +32,10 @@ end
 require 'bunny_messenger/loggable'
 require 'bunny_messenger/config'
 require 'bunny_messenger/connection'
+require 'bunny_messenger/message'
 require 'bunny_messenger/migrator'
 require 'bunny_messenger/migration'
+require 'bunny_messenger/exchange_by_name'
+require 'bunny_messenger/queue_by_name'
+require 'bunny_messenger/consumer'
+

@@ -15,7 +15,6 @@ class BunnyMessenger
                      .each_object(Class)
                      .select { |klass| klass < BunnyMessenger::Migration }
         migrations = migrations.map(&:new).sort_by(&:version).map(&:call)
-        save
       end
 
       def save

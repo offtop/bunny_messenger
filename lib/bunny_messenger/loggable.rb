@@ -26,5 +26,16 @@ class BunnyMessenger
     def log_fatal(string)
       logger.fatal(string)
     end
+
+    def trace_time description, &block
+      start_time = Time.now
+      data = yield
+      log_info([
+        description, 
+        (Time.now - start_time).to_f.to_s, 
+        's'
+      ].join(' '))
+      data
+    end
   end
 end
