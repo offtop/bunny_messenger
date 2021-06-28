@@ -18,7 +18,6 @@ require 'json'
 # - logger - logger instance
 # - logger_level - level of logger
 class BunnyMessenger
-  VERSION = '0.1.5'
   class << self
     attr_accessor :web_host,
                   :auth_params,
