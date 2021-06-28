@@ -70,7 +70,7 @@ class BunnyMessenger
         return @default_logger if @default_logger
 
         @default_logger = Logger.new(STDOUT)
-        @default_logger.level = Logger::INFO
+        @default_logger.level = logger_level
         @default_logger
       end
 
