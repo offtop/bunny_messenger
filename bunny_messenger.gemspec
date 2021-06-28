@@ -2,7 +2,6 @@
 
 $LOAD_PATH.push File.expand_path('lib', __dir__)
 
-require 'bunny_messenger'
 Gem::Specification.new do |s|
   s.name        = 'bunny_messenger'
   s.version     = BunnyMessenger::VERSION
@@ -17,3 +16,4 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rake', '>= 12'
   s.license = 'MIT'
 end
+require 'bunny_messenger'
