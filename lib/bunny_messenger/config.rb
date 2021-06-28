@@ -34,6 +34,11 @@ class BunnyMessenger
         BunnyMessenger.logger || default_logger
       end
 
+      def logger_level
+        load_config
+        BunnyMessenger.logger_level || default_logger_level
+      end
+
       private
 
       def environment
@@ -57,8 +62,8 @@ class BunnyMessenger
         @config = {}
       end
 
-      def logger_level
-        BunnyMessenger.logger_level || Logger::DEBUG
+      def default_logger_level
+        Logger::DEBUG
       end
 
       def default_logger
