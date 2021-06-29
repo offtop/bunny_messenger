@@ -4,7 +4,7 @@ $LOAD_PATH.push File.expand_path('lib', __dir__)
 
 Gem::Specification.new do |s|
   s.name        = 'bunny_messenger'
-  s.version     = '0.1.5'
+  s.version     = '0.1.6'
   s.summary     = 'Hola!'
   s.description = 'Bunny Messenger gemt'
   s.authors     = ['Ivan']

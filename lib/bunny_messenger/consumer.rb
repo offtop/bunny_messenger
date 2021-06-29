@@ -26,7 +26,7 @@ class BunnyMessenger
         rescue StandardError => e
           trace_time "Message #{metadata.message_id} failed with #{e.message}" do
             perform_on_fail(delivery_info, metadata, payload, e)
-            delivery_info.channel.nack(delivery_info.delivery_tag, false, true)
+            delivery_info.channel.nack(delivery_info.delivery_tag, false, false)
           end
         end
       end
