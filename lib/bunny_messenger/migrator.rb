@@ -52,6 +52,13 @@ class BunnyMessenger
         log_info("Cant access #{File.expand_path(config.structure_file_path)}")
       end
 
+      def flush
+        dump_queues.map {|queue| ::BunnyMessenger::QueueByName.(queue.dig('name')).delete}
+        dump_exchanges
+          .reject{|exc| exc['name'].match?(/^amq\./) || exc['name'].empty?}
+          .map {|exc| ::BunnyMessenger::ExchangeByName.(exc.dig('name')).delete}
+      end
+
       private
 
       def dump_bindings

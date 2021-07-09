@@ -7,6 +7,9 @@ namespace :bunny_messenger do
     BunnyMessenger::Migrator.save
   end
   desc 'Load saved structure, required reset env'
+  task :flush do
+    BunnyMessenger::Migrator.flush
+  end
   task :load do
     BunnyMessenger::Migrator.load
   end
