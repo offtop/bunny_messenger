@@ -21,7 +21,7 @@ namespace :bunny_messenger do
   desc 'Create migration'
   task :create_migration, [:name] do |_task, args|
     path = BunnyMessenger::Config.migrations_path
-    full_path = [path, args.name + '.rb'].join('/')
+    full_path = [path, "#{args.name}.rb"].join('/')
     klass_name = args.name.split('_').collect(&:capitalize).join
     raise 'Migration exists with this name' if File.file?(full_path)
 

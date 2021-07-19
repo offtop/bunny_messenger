@@ -5,21 +5,21 @@ class BunnyMessenger
   class QueueByName
     class << self
       def call(name, channel = nil)
-        q_dat = structure.dig(:queues)
-                         .find { |x_hash| x_hash['name'] == name }
+        q_dat = structure[:queues]
+                .find { |x_hash| x_hash['name'] == name }
         raise "Queue not found with name #{name} in schema" unless q_dat
-        new_queue = Bunny::Queue.new(
+
+        Bunny::Queue.new(
           channel || q_channel,
           name,
           q_dat.transform_keys(&:to_sym)
         )
-        new_queue
       end
 
       private
 
       def q_channel
-        @q_channel = BunnyMessenger::Connection.instance.create_channel
+        @q_channel ||= BunnyMessenger::Connection.instance.create_channel
       end
 
       def structure

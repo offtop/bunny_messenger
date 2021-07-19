@@ -25,65 +25,70 @@ class BunnyMessenger
               bindings: dump_bindings }.to_yaml
           )
         end
-        log_info('Schema saved to file ' +
-          File.expand_path(config.structure_file_path))
+        log_info("Schema saved to file #{File.expand_path(config.structure_file_path)}")
       end
 
       def load
         struct = YAML.load_file(config.structure_file_path)
         exchanges = {}
         queues = {}
-        struct.dig(:exchanges).each do |x_hash|
+        struct[:exchanges].each do |x_hash|
           exchanges[x_hash['name']] =
             create_exchange(x_hash.transform_keys(&:to_sym))
         end
-        struct.dig(:queues).each do |q_hash|
+        struct[:queues].each do |q_hash|
           queues[q_hash['name']] = create_queue(q_hash.transform_keys(&:to_sym))
         end
-        struct.dig(:bindings).each do |b_hash|
+        struct[:bindings].each do |b_hash|
           destination =
             { 'queue' => queues, 'exchange' => exchanges }
             .dig(b_hash['destination_type'], b_hash['destination'])
-          source = exchanges.dig(b_hash['source'])
+          source = exchanges[b_hash['source']]
           destination.bind(source, routing_key: b_hash['routing_key'])
         end
-        log_info('Loaded file ' + File.expand_path(config.structure_file_path))
+        log_info("Loaded file #{File.expand_path(config.structure_file_path)}")
       rescue Errno::ENOENT
         log_info("Cant access #{File.expand_path(config.structure_file_path)}")
       end
 
       def flush
-        dump_queues.map {|queue| ::BunnyMessenger::QueueByName.(queue.dig('name')).delete}
+        dump_queues.map { |queue| ::BunnyMessenger::QueueByName.call(queue['name']).delete }
         dump_exchanges
-          .reject{|exc| exc['name'].match?(/^amq\./) || exc['name'].empty?}
-          .map {|exc| ::BunnyMessenger::ExchangeByName.(exc.dig('name')).delete}
+          .reject { |exc| exc['name'].match?(/^amq\./) || exc['name'].empty? }
+          .map { |exc| ::BunnyMessenger::ExchangeByName.call(exc['name']).delete }
       end
 
       private
 
+      def http_client
+        return @http_client if @http_client
+
+        @http_client = Faraday.new(url: config.web_host ) do |faraday|
+          faraday.request  :basic_auth, *config.auth_params.fetch_values(:username, :password)
+          faraday.response :json
+        end
+      end
+
       def dump_bindings
-        HTTParty
-          .get(config.web_host + '/api/bindings',
-               basic_auth: config.auth_params)
-          .parsed_response
+        http_client
+          .get("/api/bindings")
+          .body
           .reject { |b_hash| b_hash['source'].empty? }
       end
 
       def dump_queues
         filter_queues_params(
-          HTTParty
-            .get(config.web_host + '/api/queues',
-                 basic_auth: config.auth_params)
-            .parsed_response
+          http_client
+            .get("/api/queues")
+            .body
         )
       end
 
       def dump_exchanges
         filter_exchanges_params(
-          HTTParty
-            .get(config.web_host + '/api/exchanges',
-                 basic_auth: config.auth_params)
-            .parsed_response
+          http_client
+            .get("/api/exchanges")
+            .body
         )
       end
 
