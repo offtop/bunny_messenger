@@ -3,6 +3,4 @@
 require 'rake'
 
 spec = Gem::Specification.find_by_name 'bunny_messenger'
-if defined?(Rake)
-  Dir["#{spec.gem_dir}/lib/tasks/**/*.rake"].each { |ext| load ext }
-end
+Dir["#{spec.gem_dir}/lib/tasks/**/*.rake"].each { |ext| load ext } if defined?(Rake)

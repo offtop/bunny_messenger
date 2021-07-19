@@ -7,8 +7,8 @@ class BunnyMessenger
       def call(name, channel = nil)
         return known_exchanges[name.to_s] if known_exchanges[name.to_s]
 
-        ex_dat = structure.dig(:exchanges)
-                          .find { |x_hash| x_hash['name'] == name }
+        ex_dat = structure[:exchanges]
+                 .find { |x_hash| x_hash['name'] == name }
         raise "Exchange not found with name #{name} in schema" unless ex_dat
 
         new_exchange = Bunny::Exchange.new(
@@ -29,7 +29,7 @@ class BunnyMessenger
       end
 
       def ex_channel
-        @ex_channel = BunnyMessenger::Connection.instance.create_channel
+        @ex_channel ||= BunnyMessenger::Connection.instance.create_channel
       end
 
       def structure

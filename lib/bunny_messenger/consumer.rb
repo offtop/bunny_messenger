@@ -4,6 +4,7 @@ class BunnyMessenger
   # Basis class for consumer
   class Consumer
     attr_reader :queue
+
     include BunnyMessenger::Loggable
 
     def initialize(queue_name)
@@ -19,28 +20,23 @@ class BunnyMessenger
     end
 
     def call
-      begin
-        queue.subscribe(block: true, manual_ack: true) do |delivery_info, metadata, payload|
-          begin
-            trace_time "Message #{metadata.message_id} processed in" do
-              perform(delivery_info, metadata, payload)
-              delivery_info.channel.ack(delivery_info.delivery_tag)
-            end
-          rescue StandardError => e
-            trace_time "Message #{metadata.message_id} failed with #{e.message}" do
-              perform_on_fail(delivery_info, metadata, payload, e)
-            end
-          end
+      queue.subscribe(block: true, manual_ack: true) do |delivery_info, metadata, payload|
+        trace_time "Message #{metadata.message_id} processed in" do
+          perform(delivery_info, metadata, payload)
+          delivery_info.channel.ack(delivery_info.delivery_tag)
         end
-      rescue Exception => e
-        serve_exception(e)
-        raise e
+      rescue StandardError => e
+        trace_time "Message #{metadata.message_id} failed with #{e.message}" do
+          perform_on_fail(delivery_info, metadata, payload, e)
+        end
       end
+    rescue Exception => e
+      serve_exception(e)
+      raise e
     end
 
     # Tihs is used to capture exceptions
     def serve_exception(_exception); end
-
 
     def multiple
       false

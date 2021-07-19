@@ -4,39 +4,16 @@ class BunnyMessenger
   # Dynamic configuration for gem
   class Config
     class << self
-      def auth_params
-        load_config
-        BunnyMessenger.auth_params || default_auth_params
-      end
-
-      def connection_params
-        load_config
-        BunnyMessenger.connection_params || default_connection_params
-      end
-
-      def web_host
-        load_config
-        BunnyMessenger.web_host || default_web_host
-      end
-
-      def structure_file_path
-        load_config
-        BunnyMessenger.structure_file_path || default_structure_file_path
-      end
-
-      def migrations_path
-        load_config
-        BunnyMessenger.migrations_path || default_migrations_path
+      %i[auth_params connection_params web_host structure_file_path migrations_path
+         logger_level].each do |m_name|
+        define_method m_name do
+          load_config
+          BunnyMessenger.send(m_name) || send(['default', m_name].join('_'))
+        end
       end
 
       def logger
-        load_config
         BunnyMessenger.logger || default_logger
-      end
-
-      def logger_level
-        load_config
-        BunnyMessenger.logger_level || default_logger_level
       end
 
       private
@@ -55,9 +32,9 @@ class BunnyMessenger
           @config = YAML.load_file('config/bunny.yml')[environment]
           @config.each do |k, v|
             if v.is_a?(Hash)
-              BunnyMessenger.send(k.to_s + '=', v.transform_keys(&:to_sym))
+              BunnyMessenger.send("#{k}=", v.transform_keys(&:to_sym))
             else
-              BunnyMessenger.send(k.to_s + '=', v)
+              BunnyMessenger.send("#{k}=", v)
             end
           end
         rescue Errno::ENOENT
@@ -66,13 +43,13 @@ class BunnyMessenger
       end
 
       def default_logger_level
-        Logger::DEBUG
+        Logger::INFO
       end
 
       def default_logger
         return @default_logger if @default_logger
 
-        @default_logger = Logger.new(STDOUT)
+        @default_logger = Logger.new($stdout)
         @default_logger.level = logger_level
         @default_logger
       end
