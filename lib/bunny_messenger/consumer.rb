@@ -14,13 +14,11 @@ class BunnyMessenger
       raise NotImplementedError
     end
 
-    def perform_on_fail(delivery_info, _metadata, _payload, _exception)
-      delivery_info.channel.nack(delivery_info.delivery_tag, multiple, requeue)
-    end
+    def perform_on_fail(_delivery_info, _metadata, _payload, _exception); end
 
     def call
       begin
-        queue.subscribe(block: true, manual_ack: true) do |delivery_info, metadata, payload|
+        queue.subscribe(block: block, manual_ack: true) do |delivery_info, metadata, payload|
           begin
             trace_time "Message #{metadata.message_id} processed in" do
               perform(delivery_info, metadata, payload)
@@ -29,6 +27,7 @@ class BunnyMessenger
           rescue StandardError => e
             trace_time "Message #{metadata.message_id} failed with #{e.message}" do
               perform_on_fail(delivery_info, metadata, payload, e)
+              delivery_info.channel.nack(delivery_info.delivery_tag, multiple, requeue)
             end
           end
         end
@@ -41,6 +40,9 @@ class BunnyMessenger
     # Tihs is used to capture exceptions
     def serve_exception(_exception); end
 
+    def block
+      true
+    end
 
     def multiple
       false
