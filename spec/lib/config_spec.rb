@@ -71,7 +71,7 @@ describe BunnyMessenger::Config do
       described_class.logger_level
     end
   end
-  
+
   describe '.logger' do
     it { expect(described_class).to respond_to(:logger) }
     it 'is expected to launch #logger_level' do

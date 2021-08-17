@@ -17,24 +17,22 @@ class BunnyMessenger
     def perform_on_fail(_delivery_info, _metadata, _payload, _exception); end
 
     def call
-      begin
-        queue.subscribe(block: block, manual_ack: true) do |delivery_info, metadata, payload|
-          begin
-            trace_time "Message #{metadata.message_id} processed in" do
-              perform(delivery_info, metadata, payload)
-              delivery_info.channel.ack(delivery_info.delivery_tag)
-            end
-          rescue StandardError => e
-            trace_time "Message #{metadata.message_id} failed with #{e.message}" do
-              perform_on_fail(delivery_info, metadata, payload, e)
-              delivery_info.channel.nack(delivery_info.delivery_tag, multiple, requeue)
-            end
+      queue.subscribe(block: block, manual_ack: true) do |delivery_info, metadata, payload|
+        begin
+          trace_time "Message #{metadata.message_id} processed in" do
+            perform(delivery_info, metadata, payload)
+            delivery_info.channel.ack(delivery_info.delivery_tag)
+          end
+        rescue StandardError => e
+          trace_time "Message #{metadata.message_id} failed with #{e.message}" do
+            perform_on_fail(delivery_info, metadata, payload, e)
+            delivery_info.channel.nack(delivery_info.delivery_tag, multiple, requeue)
           end
         end
-      rescue Exception => e
-        serve_exception(e)
-        raise e
       end
+    rescue Exception => e
+      serve_exception(e)
+      raise e
     end
 
     # Tihs is used to capture exceptions

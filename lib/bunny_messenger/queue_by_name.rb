@@ -8,6 +8,7 @@ class BunnyMessenger
         q_dat = structure.dig(:queues)
                          .find { |x_hash| x_hash['name'] == name }
         raise "Queue not found with name #{name} in schema" unless q_dat
+
         new_queue = Bunny::Queue.new(
           channel || q_channel,
           name,
